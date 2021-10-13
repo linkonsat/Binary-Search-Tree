@@ -1,0 +1,24 @@
+#first we need to create a node class
+
+class Node
+    attr_accessor :data, :left, :right
+    #Now we select the node and want to set left and right to nill
+   def initialize(data,left=nil,right=nil)
+    @data = data
+    @left = left
+    @right = right
+   end
+
+end
+
+class BalancedTree
+    #first we need to select the middle element
+    attr_accessor :root
+    def initialize(root=nil)
+        @root = root
+    end
+
+    def balance(root,left=nil,right=nil)
+    end
+end
+
