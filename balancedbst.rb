@@ -5,7 +5,7 @@ class Node
     #Now we select the node and want to set left and right to nill
    def initialize(data,left=nil,right=nil)
     @data = data
-    @number_of = number_of
+    @number_of = 1
     @left = left
     @right = right
    end
@@ -14,50 +14,47 @@ end
 
 class BalancedTree
     #first we need to select the middle element
-    attr_accessor :root
-    def initialize(root=nil)
-        @root = build_tree(root)
+    attr_accessor :root, :sorted_list
+    def initialize(item_list, root=nil)
+        @sorted_list = merge_sort(item_list)
+        @root = build_tree(item_list,)
+
     end
     #here is where we can start balancing the tree
-    def build_tree(item_list)
+    def build_tree(item_list = @sorted_list,root_node = nil)
         #sorted root sorts and removes duplicates from the item list
-        sorted_root = merge_sort(item_list)
+        if (item_list[0] == nil)
+            return nil
+        else
         start = 0
-        end_of_item_list = sorted_root.length - 1
-        mid = (start + sorted_root.length) / 2
+        end_of_item_list = item_list.length - 1
+        mid = (start + item_list.length) / 2
         #set the root node then start creating a tree node for the left and right side of the array
         #Then after that branch is created attach it to the correct position
-        @root = Node.new(sorted_root[sorted_root.length/2])
-        @root.right = build_nodes(sorted_root[0,mid],0,mid)
-        @root.left = build_nodes(sorted_root[mid+1,end_of_item_list],0,mid)
-        binding.pry
-    end
-
-    def build_nodes(array, start, end_int)
-            #set the mid here
-            mid_value = array[(start + end_int) /2]
-            mid = array.index(mid_value)
-            #this is to just see the steps that are happening through the recursion  
-            p [array,end_int,start]
-            if (start == end_int)
+        root_node = Node.new(item_list[item_list.length/2])
+        root_node.right = build_tree(item_list[0,mid],root_node)    
+        root_node.left = build_tree(item_list[mid+1,end_of_item_list],root_node)
+        return root_node
+        end
         
-                return 
-            else
- 
-                new_root = Node.new(array[mid]) 
-                if (array[mid-1] != nil)
-                new_root.right = build_nodes(array[0,mid],0,mid)
-                end
-                if (array[mid+1] != nil )
-                end_int = array[mid,array.length - 1].length
-                new_root.left = build_nodes(array[mid,array.length - 1],mid, end_int)
-           
-                end
-               
-            end
-            return new_root
+    end
+
+    def pretty_print(node = @root, prefix = '', is_left = true)
+        pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+        puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+        pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
+      end
+
+
+
+    def insert
 
     end
+
+    def delete
+
+    end
+
     def merge_sort(tree_items)
         new_list = tree_items
         split_list = [tree_items[0,tree_items.length/2],tree_items[tree_items.length/2,tree_items.length]]
@@ -154,5 +151,13 @@ class BalancedTree
     end
 end
 
-new_tree = BalancedTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 
+new_tree = BalancedTree.new([1, 2,3,4,5,6,7,8,9,10,12,14,15,16,17,18,19,20,21,22,])
+new_tree.build_tree()
+p new_tree.find_node(222)
+binding.pry
+new_tree.insert(88)
+p new_tree
+new_tree.insert(88)
+p new_tree
+p new_tree.pretty_print
