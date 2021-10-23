@@ -46,6 +46,20 @@ class BalancedTree
       end
 
 
+    def find_node(node=@root,value)
+        if(node.data == value)
+            return node
+        elsif(node.left == nil && node.right == nil)
+            return nil
+        elsif (node.data > value)
+            p node.data
+            find_node(node.right,value)
+        elsif (node.data < value)
+            p node.data
+            find_node(node.left,value)
+        end
+
+    end
 
     def insert
 
@@ -54,7 +68,7 @@ class BalancedTree
     def delete
 
     end
-
+    
     def merge_sort(tree_items)
         new_list = tree_items
         split_list = [tree_items[0,tree_items.length/2],tree_items[tree_items.length/2,tree_items.length]]
