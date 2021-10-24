@@ -61,12 +61,38 @@ class BalancedTree
 
     end
 
-    def insert
-
+    def insert(node = @root,value)
+        if (node.data != nil && node.data == value )
+            node.number_of += 1
+        elsif (node.data > value && node.left != nil && node.right.data < value)
+            new_node = Node.new(value)
+            new_node.right = node.right
+            node.right = new_node
+            return
+            #now we need to assign it
+        elsif (node.data < value  && node.right != nil && node.left.data > value)
+            new_node = Node.new(value)
+            new_node.left = node.left
+            node.left = new_node
+            
+            return
+            #now we need to do a new assignment
+        elsif (node.data < value && node.left == nil && node.right == nil) 
+            if (node.data < value)
+                node.left = Node.new(value)
+            else
+                node.right = Node.new(value)
+            end
+        elsif(node.data != nil && node.data > value) #recursive calls go here
+        insert(node.right,value)
+        elsif (node.data != nil && node.data < value) #recursive calls go here
+        insert(node.left,value)
+        end
+        return nil
     end
 
-    def delete
-
+    def delete(node = @root, value)
+        
     end
     
     def merge_sort(tree_items)
@@ -166,12 +192,15 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1, 2,3,4,5,6,7,8,9,10,12,14,15,16,17,18,19,20,21,22,])
+new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9,10,25,50,500,5000,50000])
 new_tree.build_tree()
 p new_tree.find_node(222)
+
+new_tree.insert(5555)
 binding.pry
 new_tree.insert(88)
 p new_tree
 new_tree.insert(88)
 p new_tree
 p new_tree.pretty_print
+
