@@ -47,10 +47,11 @@ class BalancedTree
 
 
     def find_node(node=@root,value)
-        if(node.data == value)
+        if (node == nil)
+            return "value not found"
+        elsif(node.data == value)
             return node
-        elsif(node.left == nil && node.right == nil)
-            return nil
+        
         elsif (node.data > value)
             p node.data
             find_node(node.right,value)
@@ -62,37 +63,62 @@ class BalancedTree
     end
 
     def insert(node = @root,value)
-        if (node.data != nil && node.data == value )
+        #identify base case what is a small iteration for if it's an end variable
+        if(node.data == value)
+            #increases 
             node.number_of += 1
-        elsif (node.data > value && node.left != nil && node.right.data < value)
-            new_node = Node.new(value)
-            new_node.right = node.right
-            node.right = new_node
-            return
-            #now we need to assign it
-        elsif (node.data < value  && node.right != nil && node.left.data > value)
-            new_node = Node.new(value)
-            new_node.left = node.left
-            node.left = new_node
-            
-            return
-            #now we need to do a new assignment
-        elsif (node.data < value && node.left == nil && node.right == nil) 
-            if (node.data < value)
-                node.left = Node.new(value)
-            else
-                node.right = Node.new(value)
-            end
-        elsif(node.data != nil && node.data > value) #recursive calls go here
+            return node 
+        elsif(node.right != nil && node.right.data > value && !(node.data < value))
         insert(node.right,value)
-        elsif (node.data != nil && node.data < value) #recursive calls go here
+        elsif (node.left != nil && node.left.data < value && !(node.data > value))
         insert(node.left,value)
-        end
-        return nil
+        else
+            if(node.data > value)
+                node_right = Node.new(value)
+                node_right.right = node.right
+                node.right = node_right
+                insert(node_right,node_right.data)
+            elsif (node.data < value)
+                node_left = Node.new(value)
+                node_left.left = node.left
+                node.left = node_left
+                insert(node_left,node_left.data)
+            end
+         end 
     end
 
     def delete(node = @root, value)
         
+        if(value == nil)
+            return node
+        end
+        if (node.right != nil && node.right.data > value && !(node.data < value))
+        delete(node.right,value)
+        elsif (node.left != nil && node.left.data < value && !(node.data > value))
+        delete(node.left,value)
+        else
+            if(node.left.data == value)
+            if(node.left.left == nil)
+                node.left = node.left.right
+                delete(node,nil)
+            elsif (node.left.right == nil)
+                node.right = node.left.right
+                delete(node,nil)
+            end
+            elsif(node.right.data == value)
+                if(node.right.left == nil)
+                    node.right = node.right.right
+                    delete(node,nil)
+                elsif(node.right.right == nil)
+                    node.right = node.right.left
+                    delete(node,nil)
+                end
+            end
+
+            #now we handle two cases so we need to find the smaller value from the value behind the one were removing ao
+        end
+        return  node    
+
     end
     
     def merge_sort(tree_items)
@@ -192,11 +218,11 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9,10,25,50,500,5000,50000])
+new_tree = BalancedTree.new([1,2,3,4])
 new_tree.build_tree()
-p new_tree.find_node(222)
-
-new_tree.insert(5555)
+new_tree.pretty_print
+new_tree.delete(4)
+new_tree.pretty_print
 binding.pry
 new_tree.insert(88)
 p new_tree
