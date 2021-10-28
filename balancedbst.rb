@@ -9,6 +9,10 @@ class Node
     @left = left
     @right = right
    end
+   
+   def changed_val(new_val)
+    return new_val
+   end
 
 end
 
@@ -87,38 +91,28 @@ class BalancedTree
          end 
     end
 
-    def delete(node = @root, value)
-        
+    def delete(node = self.root, value)
+        binding.pry
         if(value == nil)
             return node
         end
-        if (node.right != nil && node.right.data > value && !(node.data < value))
+        if (node.data > value )
         delete(node.right,value)
-        elsif (node.left != nil && node.left.data < value && !(node.data > value))
+        elsif (node.data < value )
         delete(node.left,value)
         else
-            if(node.left.data == value)
-            if(node.left.left == nil)
-                node.left = node.left.right
-                delete(node,nil)
-            elsif (node.left.right == nil)
-                node.right = node.left.right
-                delete(node,nil)
+            binding.pry
+            if(node.left != nil && node.right != nil)
+            elsif (node.left == nil)
+               node = node.right
+               delete(node,nil)
+            elsif (node.right == nil)
+               node = node.left
+               delete(node,nil)
             end
-            elsif(node.right.data == value)
-                if(node.right.left == nil)
-                    node.right = node.right.right
-                    delete(node,nil)
-                elsif(node.right.right == nil)
-                    node.right = node.right.left
-                    delete(node,nil)
-                end
-            end
-
-            #now we handle two cases so we need to find the smaller value from the value behind the one were removing ao
         end
         return  node    
-
+        
     end
     
     def merge_sort(tree_items)
@@ -215,13 +209,15 @@ class BalancedTree
             return sorted_items_all
         end
     end
+
 end
 
 
-new_tree = BalancedTree.new([1,2,3,4])
+new_tree = BalancedTree.new([1,2])
 new_tree.build_tree()
 new_tree.pretty_print
-new_tree.delete(4)
+new_tree.delete(1)
+new_tree.delete(2)
 new_tree.pretty_print
 binding.pry
 new_tree.insert(88)
