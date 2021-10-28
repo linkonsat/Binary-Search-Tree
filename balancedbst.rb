@@ -1,3 +1,4 @@
+require 'pry-byebug'
 #first we need to create a node class
 class Node
     attr_accessor :data, :left, :right, :number_of
@@ -91,20 +92,35 @@ class BalancedTree
     end
 
     def delete(node = self.root, value)
+       binding.pry
         if(value == nil)
             return node
         end
         if (node.data > value )
-        delete(node.right,value)
-        elsif (node.data < value )
-        delete(node.left,value)
+        node.right = delete(node.right,value)
+        elsif (node.data < value)
+        node.left = delete(node.left,value)
         else
-            if(node.left != nil && node.right != nil)
-            elsif (node.left == nil)
+        
+            if (self.root.left.nil? && self.root.right.nil?)
+                self.root = nil
+                return self.root
+            elsif (node.left.nil? == false && node.right.nil? == false)
+                node.data = node.left.data
+                temp = node.left.right
+                binding.pry
+                node.left = node.left.left  
+                if (temp.nil? == false)
+                node.left.right = temp
+                end
+                
+            elsif (node.left.nil?)
+                binding.pry
                node = node.right
                delete(node,nil)
-            elsif (node.right == nil)
-               node = node.left
+            elsif (node.right.nil?)
+                binding.pry
+                node = node.left
                delete(node,nil)
             end
         end
@@ -112,7 +128,13 @@ class BalancedTree
         
     end
     
+    def level_order_recursion(start = self.root)
+        qeueu = []
+    end
     def merge_sort(tree_items)
+        if(tree_items.length == 1)
+            return tree_items
+        end
         new_list = tree_items
         split_list = [tree_items[0,tree_items.length/2],tree_items[tree_items.length/2,tree_items.length]]
         combined_list = []
@@ -210,11 +232,10 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1,2])
+new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9])
 new_tree.build_tree()
 new_tree.pretty_print
-new_tree.delete(1)
-new_tree.delete(2)
+new_tree.delete(5)
 new_tree.pretty_print
 binding.pry
 new_tree.insert(88)
