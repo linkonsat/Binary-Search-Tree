@@ -1,5 +1,4 @@
 #first we need to create a node class
-require 'pry-byebug'
 class Node
     attr_accessor :data, :left, :right, :number_of
     #Now we select the node and want to set left and right to nill
@@ -92,7 +91,6 @@ class BalancedTree
     end
 
     def delete(node = self.root, value)
-        binding.pry
         if(value == nil)
             return node
         end
@@ -101,7 +99,6 @@ class BalancedTree
         elsif (node.data < value )
         delete(node.left,value)
         else
-            binding.pry
             if(node.left != nil && node.right != nil)
             elsif (node.left == nil)
                node = node.right
