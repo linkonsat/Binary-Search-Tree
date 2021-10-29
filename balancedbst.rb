@@ -128,21 +128,50 @@ class BalancedTree
         
     end
     
-    def level_order_recursion(start = self.root,qeueu = [self.root])
+    def pusher(container_list)
+        if (!container_list[0].right.nil?)
+            container_list.push(container_list[0].right)
+        end
+        if(!container_list[0].left.nil?)
+            container_list.push(container_list[0].left)
+        end
+    end
+    def level_order_recursion(qeueu = [self.root],no_block_return = [],&block)
+        no_block_return = no_block_return
         #que is a placeholder for the nodes were traveling through with it defaulting as the initial self.root node
         #set the base case as the queue being empty. DONT FORGET AS YOU GO BACK THROUGH THE RECURSIVE CASES YOU MUST THE QEUEU BACK TO AVOID AN INFINITE LOOP
         if (qeueu.empty?)
-            return
+            binding.pry
+            return no_block_return
         else
         qeueu = qeueu
         #if the block is given we do this however need to push the node children regardless to the qeueu to make it available
         if block_given?
         yield qeueu[0]
+        #we assign the recursive call results to qeueu as realisticaly we only care about whether or not qeueu is empty or not. first we start with the self.root.
+        #pusher checks if the current level has any children and pushes those
+        pusher(qeueu)
+        qeueu.delete_at(0)
+        level_order_recursion(qeueu,no_block_return,&block)
+        #after yield the block we push the children if there not null into the qeueu and start the recursive call.
+
         #else we just display the array as the nodes are traversed 
         else
-            
+            qeueu = qeueu
+            pusher(qeueu)
+            no_block_return.push(qeueu[0].data)
+            qeueu.delete_at(0)
+            no_block_return = level_order_recursion(qeueu,no_block_return)
+        
         end
     end
+    if (no_block_return.empty? == false)
+        return no_block_return
+    end
+    end
+
+    def inorder()
+
     end
     def merge_sort(tree_items)
         if(tree_items.length == 1)
@@ -249,7 +278,7 @@ new_tree = BalancedTree.new([1,2,3])
 new_tree.build_tree()
 new_tree.pretty_print
 array = []
-new_tree.level_order_recursion { |item| array.push(item.data)}
+results = new_tree.level_order_recursion
 new_tree.pretty_print
 binding.pry
 new_tree.insert(88)
