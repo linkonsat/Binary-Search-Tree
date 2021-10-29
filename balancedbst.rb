@@ -170,9 +170,62 @@ class BalancedTree
     end
     end
 
-    def inorder()
-
+    def inorder(tree = self.root)
+        if (tree.nil?)
+            return 
+        end
+        #traverse the left subtree
+    inorder(tree.left)
+        #visit the root
+        p tree.data
+        #traverse the right subtree
+    inorder(tree.right)
     end
+
+    def preorder(tree = self.root)
+        if (tree.nil?)
+            return 
+        elsif (tree.data == self.root.data)
+        p tree.data
+        end
+        #traverse the left subtree
+    inorder(tree.left)
+        #visit the root
+        #traverse the right subtree
+    inorder(tree.right)
+    if (tree.data != self.root.data)
+    p tree.data
+    end
+    end
+
+    def postorder(tree = self.root)
+    #traverse the left subtree
+        if (tree.nil?)
+            return
+        end
+    inorder(tree.left)
+    #visit the root
+    
+    #traverse the right subtree
+    inorder(tree.right)
+    p tree.data
+    end
+
+    def height()
+        if (node == nil)
+            return "value not found"
+        elsif(node.data == value)
+            return node
+        
+        elsif (node.data > value)
+            p node.data
+            find_node(node.right,value)
+        elsif (node.data < value)
+            p node.data
+            find_node(node.left,value)
+        end
+    end
+
     def merge_sort(tree_items)
         if(tree_items.length == 1)
             return tree_items
@@ -274,12 +327,12 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1,2,3])
+new_tree = BalancedTree.new([1,5,8,9,13,15,38,45,46,47])
 new_tree.build_tree()
 new_tree.pretty_print
 array = []
-results = new_tree.level_order_recursion
 new_tree.pretty_print
+new_tree.height(38)
 binding.pry
 new_tree.insert(88)
 p new_tree
