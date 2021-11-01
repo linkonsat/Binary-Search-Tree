@@ -248,7 +248,21 @@ class BalancedTree
         #5. compare values of left and right recursive values   
         return left_height_value + 1
     end
-
+    def depth (value,node = self.root, depth = 0)
+        #Given a target node of N. We want to start traversing the node path starting from root. by default we know we can start from the root however we need to provide a target node
+        if(node.data == value)
+            #Once we find the node we return depth to the next recursive call
+            return depth 
+        #check if the node is greater than the value 
+        elsif (node.data > value) 
+            depth += 1
+            new_depth = depth(value, node.right,depth)
+        elsif (node.data < value)
+            depth += 1
+            new_depth =depth(value,node.left,depth)
+        end
+        return new_depth
+    end
     def merge_sort(tree_items)
         if(tree_items.length == 1)
             return tree_items
