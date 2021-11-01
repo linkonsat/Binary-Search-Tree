@@ -128,6 +128,7 @@ class BalancedTree
         
     end
     
+
     def pusher(container_list)
         if (!container_list[0].right.nil?)
             container_list.push(container_list[0].right)
@@ -210,20 +211,42 @@ class BalancedTree
     inorder(tree.right)
     p tree.data
     end
-
-    def height()
-        if (node == nil)
-            return "value not found"
-        elsif(node.data == value)
-            return node
-        
-        elsif (node.data > value)
-            p node.data
-            find_node(node.right,value)
-        elsif (node.data < value)
-            p node.data
-            find_node(node.left,value)
+    #array containing checked nodes
+    #array containing height found for each branch
+    #question is that we don't want to pass 4 parameters. At a maximum for a clean method 
+    #so one way to look at this is how can we further abstract this method out. 
+    def height(node, height_num = 0)
+        #1. get the node from the tree that we are starting from if it's not the correct class
+        if (node != nil && node.class != Node)
+            node = find_node(node)
+            #1.5 recurisvely return height_num if node has no children
         end
+        if(node.nil? || node.left.nil? && node.right.nil?)
+            return height_num 
+        end
+        height_num += 1 
+        #4. start a recursive call on the left node to travel down all of it's node
+        right_height_value = height(node.right,height_num)
+        #5. compare values of left and right recursive values
+        left_height_value = left_height(node.left)   
+        result = left_height_value > right_height_value ? left_height_value : right_height_value
+        #6. return the value of the height of the node
+        return result
+    end
+
+    def left_height(node,height_num = 0)
+        #1. get the node from the tree that we are starting from if it's not the correct class
+        if (node != nil && node.class != Node)
+            node = find_node(node)
+            #1.5 recurisvely return height_num if node has no children
+        end
+        if(node.nil? || node.left.nil? && node.right.nil?)
+            return height_num + 1
+        end
+        #4. start a recursive call on the left node to travel down all of it's node
+        left_height_value = left_height(node.left,height_num)
+        #5. compare values of left and right recursive values   
+        return left_height_value + 1
     end
 
     def merge_sort(tree_items)
@@ -327,12 +350,13 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1,5,8,9,13,15,38,45,46,47])
+new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9,10,11,12,13,14,64.5,67])
 new_tree.build_tree()
 new_tree.pretty_print
-array = []
+new_tree.insert(68)
+new_tree.insert(69)
 new_tree.pretty_print
-new_tree.height(38)
+result = new_tree.depth(67)
 binding.pry
 new_tree.insert(88)
 p new_tree
