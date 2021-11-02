@@ -21,7 +21,7 @@ class BalancedTree
     attr_accessor :root, :sorted_list
     def initialize(item_list, root=nil)
         @sorted_list = merge_sort(item_list)
-        @root = build_tree(item_list,)
+        @root = build_tree(item_list)
 
     end
     #here is where we can start balancing the tree
@@ -170,23 +170,30 @@ class BalancedTree
     end
     end
 
-    def inorder(tree = self.root)
+    def inorder(tree = self.root, no_block_given = [],&block)
         if (tree.nil?)
             return 
         end
         #traverse the left subtree
-    inorder(tree.left)
+     inorder(tree.left,no_block_given,&block)
         #visit the root
-        p tree.data
+        if block_given?
+        current_value = tree.data
+        yield current_value
+        else
+           # binding.pry
+        no_block_given.push(tree.data)
         #traverse the right subtree
-    inorder(tree.right)
+        end
+    inorder(tree.right,no_block_given,&block)
+            return no_block_given
     end
 
     def preorder(tree = self.root)
         if (tree.nil?)
             return 
         elsif (tree.data == self.root.data)
-        p tree.data
+        yield tree.data
         end
         #traverse the left subtree
     inorder(tree.left)
@@ -194,7 +201,7 @@ class BalancedTree
         #traverse the right subtree
     inorder(tree.right)
     if (tree.data != self.root.data)
-    p tree.data
+    yield tree.data
     end
     end
 
@@ -208,7 +215,7 @@ class BalancedTree
     
     #traverse the right subtree
     inorder(tree.right)
-    p tree.data
+    yield tree.data
     end
     #array containing checked nodes
     #array containing height found for each branch
@@ -273,6 +280,12 @@ class BalancedTree
         end
     end
     return result
+    end
+
+    def rebalance
+        new_values = self.inorder
+        @root = build_tree(new_values)
+        binding.pry
     end
     def merge_sort(tree_items)
         if(tree_items.length == 1)
@@ -385,10 +398,11 @@ new_tree.pretty_print
 result = new_tree.depth(67)
 result = new_tree.level_order_recursion
 is_balanced = new_tree.balanced?
+no_block = new_tree.inorder
+new_tree.rebalance
 binding.pry
 new_tree.insert(88)
 p new_tree
 new_tree.insert(88)
 p new_tree
 p new_tree.pretty_print
-
