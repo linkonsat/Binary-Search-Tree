@@ -142,7 +142,6 @@ class BalancedTree
         #que is a placeholder for the nodes were traveling through with it defaulting as the initial self.root node
         #set the base case as the queue being empty. DONT FORGET AS YOU GO BACK THROUGH THE RECURSIVE CASES YOU MUST THE QEUEU BACK TO AVOID AN INFINITE LOOP
         if (qeueu.empty?)
-            binding.pry
             return no_block_return
         else
         qeueu = qeueu
@@ -160,7 +159,7 @@ class BalancedTree
         else
             qeueu = qeueu
             pusher(qeueu)
-            no_block_return.push(qeueu[0].data)
+            no_block_return.push(qeueu[0])
             qeueu.delete_at(0)
             no_block_return = level_order_recursion(qeueu,no_block_return)
         
@@ -262,6 +261,18 @@ class BalancedTree
             new_depth =depth(value,node.left,depth)
         end
         return new_depth
+    end
+
+    def balanced?
+        result = true
+        self.level_order_recursion do |item|
+            left_height = height(item.left)
+            right_height = height(item.right)
+        if(!(left_height - 1..left_height + 1).include?(right_height) || !(right_height - 1..right_height + 1).include?(left_height))
+            return false
+        end
+    end
+    return result
     end
     def merge_sort(tree_items)
         if(tree_items.length == 1)
@@ -366,11 +377,14 @@ end
 
 new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9,10,11,12,13,14,64.5,67])
 new_tree.build_tree()
+array = []
 new_tree.pretty_print
 new_tree.insert(68)
 new_tree.insert(69)
 new_tree.pretty_print
 result = new_tree.depth(67)
+result = new_tree.level_order_recursion
+is_balanced = new_tree.balanced?
 binding.pry
 new_tree.insert(88)
 p new_tree
