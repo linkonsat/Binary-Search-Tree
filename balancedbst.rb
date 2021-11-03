@@ -21,7 +21,7 @@ class BalancedTree
     attr_accessor :root, :sorted_list
     def initialize(item_list, root=nil)
         @sorted_list = merge_sort(item_list)
-        @root = build_tree(item_list)
+        @root = build_tree(@sorted_list)
 
     end
     #here is where we can start balancing the tree
@@ -56,10 +56,10 @@ class BalancedTree
         elsif(node.data == value)
             return node
         
-        elsif (node.data > value)
+        elsif (node.data < value)
             p node.data
             find_node(node.right,value)
-        elsif (node.data < value)
+        elsif (node.data > value)
             p node.data
             find_node(node.left,value)
         end
@@ -68,27 +68,19 @@ class BalancedTree
 
     def insert(node = @root,value)
         #identify base case what is a small iteration for if it's an end variable
-        if(node.data == value)
-            #increases 
-            node.number_of += 1
-            return node 
-        elsif(node.right != nil && node.right.data > value && !(node.data < value))
-        insert(node.right,value)
-        elsif (node.left != nil && node.left.data < value && !(node.data > value))
-        insert(node.left,value)
-        else
-            if(node.data > value)
-                node_right = Node.new(value)
-                node_right.right = node.right
-                node.right = node_right
-                insert(node_right,node_right.data)
-            elsif (node.data < value)
-                node_left = Node.new(value)
-                node_left.left = node.left
-                node.left = node_left
-                insert(node_left,node_left.data)
+        if (node.left.nil? && node.right.nil?)
+            if (value < node.data)
+                node.left = Node.new(value)
+            elsif (value > node.data)
+                node.right = Node.new(value)
             end
-         end 
+        end
+        if(node.data < value)
+        insert(node.right,value)
+        elsif (node.data > value )
+        insert(node.left,value)
+        end
+        
     end
 
     def delete(node = self.root, value)
@@ -189,33 +181,48 @@ class BalancedTree
             return no_block_given
     end
 
-    def preorder(tree = self.root)
+    def preorder(tree = self.root,no_block_given = [],&block)
         if (tree.nil?)
             return 
         elsif (tree.data == self.root.data)
+            if block_given?
         yield tree.data
+            else
+                no_block_given.push(tree.data)
         end
+    end
         #traverse the left subtree
-    inorder(tree.left)
+    inorder(tree.left,no_block_given,&block)
         #visit the root
         #traverse the right subtree
-    inorder(tree.right)
+    inorder(tree.right,no_block_given,&block)
     if (tree.data != self.root.data)
+        if block_given?
     yield tree.data
+        else
+            no_block_given.push(tree.data)
+        end
     end
+    return no_block_given
     end
 
-    def postorder(tree = self.root)
+    def postorder(tree = self.root,no_block_given = [],&block)
     #traverse the left subtree
         if (tree.nil?)
             return
         end
-    inorder(tree.left)
+    inorder(tree.left,no_block_given,&block)
     #visit the root
     
     #traverse the right subtree
-    inorder(tree.right)
+    inorder(tree.right,no_block_given,&block)
+    if block_given?
     yield tree.data
+    else
+        no_block_given.push(tree.data)
+    end
+    return no_block_given
+
     end
     #array containing checked nodes
     #array containing height found for each branch
@@ -283,8 +290,9 @@ class BalancedTree
     end
 
     def rebalance
-        new_values = self.inorder
-        @root = build_tree(new_values)
+        #new_values = self.postorder
+        self.sorted_list = merge_sort(self.inorder)
+        self.root = build_tree(@sorted_list)
         binding.pry
     end
     def merge_sort(tree_items)
@@ -296,23 +304,22 @@ class BalancedTree
         combined_list = []
         if (combined_list.length == 0)
             combined_list.push(sort_left(split_list[0], -1, []))
-            combined_list.push(merge_sort_right =  sort_right(split_list[1], -1, []))
+            combined_list.push(sort_right(split_list[1], -1, []))
 
         end
        
-       combined_list = final_sort(combined_list,0,[])
+       combined_list = final_sort([combined_list[0].reverse,combined_list[1].reverse],0,[])
+       #binding.pry
         return combined_list
     end
 
     def sort_left(left_side,count,sorted_items_left)
-
+       # binding.pry
         if (count == -1)
             left_side.each_with_index do | item, index |
                 if(left_side[index+1] != nil)
-            left_side[index..index + 1]  =  item > left_side[index + 1] ? [left_side[index+1..index]] : [left_side[index..index+1]]
-                else
-
-                    left_side[index] = [left_side[index]]
+                   # binding.pry
+            left_side[index..index + 1]  =  item > left_side[index + 1] ? [[left_side[index],left_side[index+1]]] : [[left_side[index+1],left_side[index]]]
                 end
                 end
                 count += 1
@@ -321,19 +328,16 @@ class BalancedTree
             new_left_side = left_side.flatten
             item = new_left_side[count]
             i = 0
-
             until i == new_left_side.length
-                if (new_left_side[i] < item && sorted_items_left.count(new_left_side[i]) != 1)
+                if (new_left_side[i] > item && sorted_items_left.count(new_left_side[i]) != 1)
                     sorted_items_left.push(new_left_side[i])
                 end
-                i += 1
+               i += 1
             end
             count += 1
             
             sort_left(new_left_side,count,sorted_items_left)
         elsif(count == left_side.flatten.length)
-
-            sorted_items_left.push(left_side.max)
             return sorted_items_left
         end
     end
@@ -342,7 +346,7 @@ class BalancedTree
             right_side.each_with_index do | item, index |
     
                 if(right_side[index+1] != nil)
-            right_side[index..index + 1]  =  item > right_side[index + 1] ? [right_side[index+1..index]] : [right_side[index..index+1]]
+            right_side[index..index + 1]  =  item > right_side[index + 1] ? [[right_side[index],right_side[index+1]]] : [[right_side[index+1],right_side[index]]]
             else
                 right_side[index] = [right_side[index]]
             end
@@ -353,7 +357,7 @@ class BalancedTree
             item = new_right_side[count]
             i = 0
             until i == new_right_side.length
-                if (new_right_side[i] < item && sorted_items_right.count(right_side[i]) != 1)
+                if (new_right_side[i] > item && sorted_items_right.count(right_side[i]) != 1)
                     sorted_items_right.push(new_right_side[i])
                 end
                 i += 1
@@ -361,18 +365,19 @@ class BalancedTree
             count += 1
             sort_right(new_right_side,count,sorted_items_right)
         elsif(right_side.flatten.length == count)
-        sorted_items_right.push(right_side.max)
         return sorted_items_right
         end
     end
   
 
     def final_sort(combined_list,count, sorted_items_all)
+        #binding.pry
         i = 0
         item = combined_list.flatten[count]
         until i == combined_list.flatten.length 
+            #binding.pry
             if(combined_list.flatten[i] < item && sorted_items_all.count(combined_list[i]) != 1)
-                sorted_items_all.push(combined_list[i])
+                sorted_items_all.push(combined_list.flatten[i])
             end
             i += 1
         end
@@ -388,18 +393,13 @@ class BalancedTree
 end
 
 
-new_tree = BalancedTree.new([1,2,3,4,5,6,7,8,9,10,11,12,13,14,64.5,67])
+new_tree = BalancedTree.new([50000000,45654,3000,2345,800,700,600,500,2000,1000,250,200,150,100,67,64.5,39,25,29,22,14,13,12,11,10.5,10,9,8,7,6,5,4,3,2,1,10000,11000,12000])
 new_tree.build_tree()
 array = []
-new_tree.pretty_print
-new_tree.insert(68)
-new_tree.insert(69)
-new_tree.pretty_print
-result = new_tree.depth(67)
+
 result = new_tree.level_order_recursion
 is_balanced = new_tree.balanced?
-no_block = new_tree.inorder
-new_tree.rebalance
+new_tree.pretty_print
 binding.pry
 new_tree.insert(88)
 p new_tree
